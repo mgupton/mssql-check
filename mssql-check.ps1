@@ -21,7 +21,7 @@
 #
 # Usage:
 #
-# .\mssql-check.ps1 *> mssql-check.csv
+# .\mssql-check.ps1 *> mssql-check.tsv
 #
 function main {
     $instances = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server').InstalledInstances
@@ -34,10 +34,10 @@ function main {
             Write-Host $check.Name
 
             if ($instance -ne "MSSQLSERVER") {
-                & sqlcmd -S "(local)\${instance}" -i $check.Name -s "," -h-1
+                & sqlcmd -S "(local)\${instance}" -i $script.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
             }
             else {
-                & sqlcmd -S "(local)" -i $check.Name -s "," -h-1
+                & sqlcmd -S "(local)" -i $script.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
             }
         }
     }
