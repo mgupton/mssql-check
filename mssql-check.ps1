@@ -34,11 +34,13 @@ function main {
             Write-Host $check.Name
 
             if ($instance -ne "MSSQLSERVER") {
-                & sqlcmd -S "(local)\${instance}" -i $script.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
+                $cmdout = & sqlcmd -S "(local)\${instance}" -i $check.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
             }
             else {
-                & sqlcmd -S "(local)" -i $script.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
+                $cmdout = & sqlcmd -S "(local)" -i $check.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
             }
+
+            Write-Host $cmdout
         }
     }
 }
