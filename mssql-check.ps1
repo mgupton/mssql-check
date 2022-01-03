@@ -13,7 +13,7 @@
 #
 # Output:
 #
-# The output from the script is CSV data.
+# The output from the script is tab delimited data.
 #
 # Dependencies:
 #
@@ -34,13 +34,21 @@ function main {
             Write-Host $check.Name
 
             if ($instance -ne "MSSQLSERVER") {
-                $cmdout = & sqlcmd -S "(local)\${instance}" -i $check.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
+                $cmdout = & sqlcmd -S "(local)\${instance}" -i $check.Name -s `"`t`" -h 1
             }
             else {
-                $cmdout = & sqlcmd -S "(local)" -i $check.Name -s `"`t`" -h 1 | Select-String -Pattern '^-{2,}' -NotMatch
+                $cmdout = & sqlcmd -S "(local)" -i $check.Name -s `"`t`" -h 1
             }
 
-            Write-Host $cmdout
+            $lineno = 0
+
+            foreach ($line in $cmdout) {
+                if ($line -notmatch "^-{2,}") {
+                    $line = "${instance}`t${line}"
+                    Write-Output $line
+                }
+                $lineno += 1                
+            }
         }
     }
 }
